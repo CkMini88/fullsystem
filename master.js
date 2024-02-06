@@ -208,8 +208,8 @@ case 'project_notification':
     const chatId = msg.chat.id;
     const fullName = msg.from.first_name + ' ' + msg.from.last_name;
   
-    const greetingMessage = "Hello Mr. ${fullName} Welcome to your life project please click the {Project Explanation} button to start.";
-  
+    const greetingMessage = `Hello Mr. ${fullName} Welcome to your life project please click the {Project Explanation} button to start.`;
+
   const copyrightMessage = `\n\n\n© ${new Date().getFullYear()} Kosar Tarkhany. All Rights Reserved`;
 
   const combinedMessage = greetingMessage + copyrightMessage;
