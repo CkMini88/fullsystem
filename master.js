@@ -18,25 +18,35 @@ const adminChatId = -1002125523786;
 let voiceOptionClicked = false; 
 
 const askQuestions = (chatId, questions) => {
-  const askQuestion = (index) => {
+  let index = 0;
+
+  const askQuestion = () => {
     if (index < questions.length) {
-      bot.sendMessage(chatId, questions[index], { reply_markup: { force_reply: true } })
-        .then((response) => {
-          const messageId = response.message_id;
-          bot.onReplyToMessage(chatId, messageId, (reply) => {
-            bot.forwardMessage(adminChatId, chatId, reply.message_id);
-            askQuestion(index + 1);
+      bot.sendMessage(chatId, questions[index], { reply_markup: { force_reply: false } })
+        .then(() => {
+          bot.once('message', (reply) => {
+            const username = reply.from.username ? `@${reply.from.username}` : '';
+            const forwardedMessage = `Bot: Sarkawt Enlgish Bot\n\nئەندام: ${username}\n\nپرسیار: ${questions[index]}\n\nوەڵام: ${reply.text}`;
+            bot.sendMessage(adminChatId, forwardedMessage)
+              .then(() => {
+                index++;
+                askQuestion();
+              });
           });
         });
     } else {
-      const translatedText = 'Thank you very much, for answering all the questions. Your answers have been forwarded to Mr.Sarkawt . You can contact Mr.Sarkawt directly via clicking this name (@SarkawtDxn). Thank you.';
+      const translatedText = 'Hello sir your answers have been forwarded to Mr. Sarkawt for review. For quick communication, please click on this username (@sarkawtdxn) to reach him.';
       bot.sendMessage(chatId, translatedText);
-      }  
+    }
   };
-  askQuestion(0);
+
+  askQuestion();
 };
-  const buttons = [
-    [
+
+
+
+const buttons = [
+  [
       { text: 'Project Explanation', callback_data: 'project_notification' },
       { text: 'I Want To Start Working', callback_data: 'button_2' },
     ],
@@ -118,32 +128,32 @@ case 'project_notification':
         }
         break;
 
-      case 'button_2':
-        if (callbackQuery.from.username) {
-          const questions = [
-            'What is your name?',
-            'How old are you?',
-            'Where do you live?',
-            'Do you have a certificate?',
-            'How do you spend your free time? ',
-          ];
-          askQuestions(chatId, questions);
-        } else {
-          const buttonText = 'Click Here';
-          const buttonCallback = 'send_images';
-
-          bot.sendMessage(chatId, 'Please create a username via the button below' + buttonText, {
-            reply_markup: {
-              inline_keyboard: [
-                [{ text: buttonText, callback_data: buttonCallback }],
-              ],
-            },
-          });
-        }
-        break;
-
+        case 'button_2':
+          if (callbackQuery.from.username) {
+            const questions = [
+              'What is your name?',
+              'Where do you live?',
+              'Where do you live?',
+              'Do you have any certificates?',
+             'How do you spend your free time?',
+            ];
+            askQuestions(chatId, questions);
+          } else {
+            const buttonText = 'Click Here';
+            const buttonCallback = 'send_images';
+            
+            bot.sendMessage(chatId, 'Sorry since you dont have a username and because of that Mr.Sarkawt wont receive your answers .Please to create a username click the button below. After creating the user name please click (I want to start working) again. ', {
+              reply_markup: {
+                inline_keyboard: [
+                  [{ text: buttonText, callback_data: buttonCallback }],
+                ],
+              },
+            });
+          } 
+          break;
       case 'send_images':
         const imagePaths = [
+          'not0.jpg',
           'not1.jpg',
           'not2.jpg',
           'not3.jpg',
