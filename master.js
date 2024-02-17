@@ -11,7 +11,7 @@ const bot = new TelegramBot(token, { polling: true });
 
 bot.onText(/\/start/, (msg) => {
   const chatId = msg.chat.id;
-  const userFullName = msg.from.first_name + ' ' + msg.from.last_name;
+  const userFullName = msg.from.first_name + ' ' + msg.from.last_name
   const message = `سڵاو ${userFullName} بەخێربێت بۆ پرۆژەی ژیانت\n\n   © 2024 Kosar Tarkhany. All Rights Reserved`;
 
   bot.sendMessage(chatId, message, {
