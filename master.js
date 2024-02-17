@@ -1,49 +1,43 @@
-const TelegramBot = require('node-telegram-bot-api');
 const express = require('express');
-const bodyParser = require('body-parser');
+const TelegramBot = require('node-telegram-bot-api');
 
-// Telegram bot setup
-const botToken = '6580940984:AAE-77qxB6sTfVhdnnKeyfz8ZXBOGScENh8'; 
-const bot = new TelegramBot(botToken, { polling: true });
+const token = '6580940984:AAE-77qxB6sTfVhdnnKeyfz8ZXBOGScENh8';
 
-// Express app setup
 const app = express();
-const port = process.env.PORT || 3000;
 
-// Body parser middleware
-app.use(bodyParser.json());
+const PORT = process.env.PORT || 3000;
 
-// Define inline keyboard markup
-const keyboardMarkup = {
-    inline_keyboard: [
+const bot = new TelegramBot(token, { polling: true });
+
+bot.onText(/\/start/, (msg) => {
+  const chatId = msg.chat.id;
+  const userFullName = msg.from.first_name + ' ' + msg.from.last_name;
+  const message = `سڵاو ${userFullName} بەخێربێت بۆ پرۆژەی ژیانت\n\n   © 2024 Kosar Tarkhany. All Rights Reserved`;
+
+  bot.sendMessage(chatId, message, {
+    reply_markup: {
+      inline_keyboard: [
         [
-            { text: 'کوردی سۆرانی', url: 'https://t.me/Sarkawt_Nure_So_bot' },
-            { text: 'کوردی بادینی', url: 'https://t.me/Sarkawt_Badeni_bot' },
+          { text: ' کوردی سۆرانی', url: 'https://t.me/Sarkawt_Nure_So_bot' }
         ],
         [
-            { text: 'عربی', url: 'https://t.me/Sarkawt_Nure_Arabic_bot' },
-            { text: 'English', url: 'https://t.me/Sarkawt_Nure_English_bot' },
+          { text: 'کوردی بادینی', url: 'https://t.me/Sarkawt_Badeni_bot' }
+        ],
+        [
+          { text: 'عربی', url: 'https://t.me/Sarkawt_Nure_Arabic_bot' }
+        ],
+        [
+          { text: 'Enlgish', url: 'https://t.me/Sarkawt_Nure_English_bot' }
         ]
-    ]
-};
-
-// Command handler
-bot.onText(/\/start/, (msg) => {
-    const name = msg.from.first_name + ' ' + msg.from.last_name;
-    const welcomeMessage = `بەخێر بێن بۆ پرۆژەی ژیانت بەڕێز(${name})\n\n© 2024 Kosar Tarkhany. All Rights Reserved.\n\nزمانێ پەسەند هەلبژیرە\n\nتكايە زمانی پەسەندت هەڵبژێرە\n\nPlease select your preferred language\n\nالرجاء اختيار اللغة المفضلة لديك`;
-
-    bot.sendMessage(msg.chat.id, welcomeMessage, {
-        reply_markup: JSON.stringify(keyboardMarkup)
-    });
+      ]
+    }
+  });
 });
 
-// Handle POST requests from Telegram
-app.post(`/bot${botToken}`, (req, res) => {
-    bot.processUpdate(req.body);
-    res.sendStatus(200);
+app.get('/', (req, res) => {
+  res.status(200).send('Server is up and running!');
 });
 
-// Start Express server
-app.listen(port, () => {
-    console.log(`Express server is running on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
