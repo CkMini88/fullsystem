@@ -13,30 +13,36 @@ app.use(bodyParser.json());
 const botToken = process.env.TELEGRAM_BOT_TOKEN || '6666684630:AAElyBHdrMqJBECSWMivJ4uNohAwYmXOLjI'; 
 const bot = new TelegramBot(botToken, { polling: true });
 
-const adminChatId = -1002125523786;
+const adminChatId =  -1002125523786;
 
 let voiceOptionClicked = false; 
 
 const askQuestions = (chatId, questions) => {
-  const askQuestion = (index) => {
+  let index = 0;
+
+  const askQuestion = () => {
     if (index < questions.length) {
-      bot.sendMessage(chatId, questions[index], { reply_markup: { force_reply: true } })
-        .then((response) => {
-          const messageId = response.message_id;
-          bot.onReplyToMessage(chatId, messageId, (reply) => {
-            bot.forwardMessage(adminChatId, chatId, reply.message_id);
-            askQuestion(index + 1);
+      bot.sendMessage(chatId, questions[index], { reply_markup: { force_reply: false } })
+        .then(() => {
+          bot.once('message', (reply) => {
+            const username = reply.from.username ? `@${reply.from.username}` : '';
+            const forwardedMessage = `Bot: Sarkawt Arabic Bot\n\nئەندام: ${username}\n\nپرسیار: ${questions[index]}\n\nوەڵام: ${reply.text}`;
+            bot.sendMessage(adminChatId, forwardedMessage)
+              .then(() => {
+                index++;
+                askQuestion();
+              });
           });
         });
     } else {
-        const translatedText='كثيرًا من الشكر لك بيريز على تقديم جميع الأسئلة. تم الرد على استفساراتك بكل وقت ممكن. يمكنك التواصل مباشرةً معهم عن طريق النقر على هذا الاسم (@SarkawtDxn) للتواصل مع الخبراء';
-        bot.sendMessage(chatId, translatedText);
-      }
-      
+      const translatedText = 'كثيرًا من الشكر لك بيريز على تقديم جميع الأسئلة. تم الرد على استفساراتك بكل وقت ممكن. يمكنك التواصل مباشرةً معهم عن طريق النقر على هذا الاسم (@SarkawtDxn) للتواصل مع الخبراء';
+      bot.sendMessage(chatId, translatedText);
+    }
   };
 
-  askQuestion(0);
+  askQuestion();
 };
+
 
   const buttons = [
     [
@@ -132,21 +138,21 @@ case 'project_notification':
           ];
           askQuestions(chatId, questions);
         } else {
-          const buttonText = 'انقر هنا.';
+          const buttonText = 'انقر هنا';
           const buttonCallback = 'send_images';
-
-          bot.sendMessage(chatId, ' الرجاء المعذرة، ليس لديك اسم مستخدم لذا لا يمكنني تقديم تعليقاتك. يرجى إنشاء اسم مستخدم صحيح.' + buttonText, {
+          
+          bot.sendMessage(chatId, 'آسف لأنك لا تملك اسم مستخدم وبسبب ذلك لن يتلقى Mr.Sarkawt إجاباتك. يرجى إنشاء اسم مستخدم انقر فوق الزر أدناه. بعد إنشاء اسم المستخدم ، يرجى النقر فوق (أريد بدء العمل) مرة أخرى. ', {
             reply_markup: {
               inline_keyboard: [
                 [{ text: buttonText, callback_data: buttonCallback }],
               ],
             },
           });
-        }
+        } 
         break;
-
       case 'send_images':
         const imagePaths = [
+          'not0.jpg',
           'not1.jpg',
           'not2.jpg',
           'not3.jpg',
