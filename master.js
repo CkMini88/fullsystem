@@ -13,29 +13,34 @@ app.use(bodyParser.json());
 const botToken = process.env.TELEGRAM_BOT_TOKEN || '6879095081:AAFrORCGH9SQ9N68p1enYwGtDzUHXUtLaKM'; 
 const bot = new TelegramBot(botToken, { polling: true });
 
-const adminChatId = -1002125523786;
+const adminChatId = -1002125523786; 
 
 let voiceOptionClicked = false; 
 
 const askQuestions = (chatId, questions) => {
-  const askQuestion = (index) => {
+  let index = 0;
+
+  const askQuestion = () => {
     if (index < questions.length) {
-      bot.sendMessage(chatId, questions[index], { reply_markup: { force_reply: true } })
-        .then((response) => {
-          const messageId = response.message_id;
-          bot.onReplyToMessage(chatId, messageId, (reply) => {
-            bot.forwardMessage(adminChatId, chatId, reply.message_id);
-            askQuestion(index + 1);
+      bot.sendMessage(chatId, questions[index], { reply_markup: { force_reply: false } })
+        .then(() => {
+          bot.once('message', (reply) => {
+            const username = reply.from.username ? `@${reply.from.username}` : '';
+            const forwardedMessage = `Bot: Sarkawt Sorani Bot\n\nئەندام: ${username}\n\nپرسیار: ${questions[index]}\n\nوەڵام: ${reply.text}`;
+            bot.sendMessage(adminChatId, forwardedMessage)
+              .then(() => {
+                index++;
+                askQuestion();
+              });
           });
         });
     } else {
-      const translatedText = 'زۆر سپاس بەڕێز بۆ وەڵام دانەوی هەموو پرسیارەکان. وەڵامەکانی تۆ گەشتوە بە کاک سەرکەوت. بۆ پەیوەندی کردنی ڕاسەتەوخۆ بە کاک سەرکەوتەووە کلیک لەم ناوە (@sarkawtdnx) بکەن';
+      const translatedText = 'زۆر سپاس بەڕێز بۆ وەڵام دانەوی هەموو پرسیارەکان وەڵامەکانی تۆ گەشتوە بە کاک سەرکەوت. بۆ چونە پەیوەندی ڕاستەوخۆ لەگەل بەڕێزیان کلیک لەم ناوە بکە (@sarkawtdxn)';
       bot.sendMessage(chatId, translatedText);
-      }
-      
+    }
   };
 
-  askQuestion(0);
+  askQuestion();
 };
 
   const buttons = [
@@ -121,32 +126,32 @@ case 'project_notification':
         }
         break;
 
-      case 'button_2':
-        if (callbackQuery.from.username) {
-          const questions = [
-            'ناوت چیە؟',
-            'تەمەنت چەندە؟',
-            'لە کوێ دەژیت؟',
-            'ئایا بڕوانامەت هەیە؟',
-           'ئایا کاتەبەتاڵەکانت بە چیەوە سەرف دەکەی؟',
-          ];
-          askQuestions(chatId, questions);
-        } else {
-          const buttonText = 'کلیک لێرە بکە';
-          const buttonCallback = 'send_images';
-
-          bot.sendMessage(chatId, 'ببورە بەڕێز تۆ ناوی بەکار هێنەرت نیە بە بۆنەی ئەم هۆکارەشەوە وەڵامەکانی تۆ ناگات بە کاک سەرکەوت.. بۆ دروست کردنی ناوی بەکار هێنەر کلیک لە دوگمەی خوارەوە بکە.' + buttonText, {
-            reply_markup: {
-              inline_keyboard: [
-                [{ text: buttonText, callback_data: buttonCallback }],
-              ],
-            },
-          });
-        }
-        break;
-
+        case 'button_2':
+          if (callbackQuery.from.username) {
+            const questions = [
+              'ئایا ناوت چیە؟',
+              'لە کوێ دەژیت؟',
+              'لە کوێ دەژیت؟',
+              'ئایا هیج بڕوانامەیەکت هەیە؟',
+             'ئایا کاتەبەتاڵەکانت بە چیەو بە سەر دەبەی؟',
+            ];
+            askQuestions(chatId, questions);
+          } else {
+            const buttonText = 'کلیک لێرە بکە';
+            const buttonCallback = 'send_images';
+            
+            bot.sendMessage(chatId, 'ببورە بەڕێز تۆ ناوی بەکار هێنەرت نیە وە لەبەر ئەو هۆکارەش وەڵامەکانی تۆ ناگات بە کاک سەرکەوت. تکایە بۆ دروست کردنی ناوی بەکار ‌هێنەر کلیک لە دوگمەی ژێرەوە بکە. وە پاش دروست کردنی ناوی بەکار هێنەر دووبارە کلیک لە دوگمەی (دەمەوێت دەست بکەم با کردن) بکەوە', {
+              reply_markup: {
+                inline_keyboard: [
+                  [{ text: buttonText, callback_data: buttonCallback }],
+                ],
+              },
+            });
+          } 
+          break;
       case 'send_images':
         const imagePaths = [
+          'not0.jpg',
           'not1.jpg',
           'not2.jpg',
           'not3.jpg',
