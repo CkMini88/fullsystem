@@ -18,24 +18,29 @@ const adminChatId = -1002125523786;
 let voiceOptionClicked = false; 
 
 const askQuestions = (chatId, questions) => {
-  const askQuestion = (index) => {
+  let index = 0;
+
+  const askQuestion = () => {
     if (index < questions.length) {
-      bot.sendMessage(chatId, questions[index], { reply_markup: { force_reply: true } })
-        .then((response) => {
-          const messageId = response.message_id;
-          bot.onReplyToMessage(chatId, messageId, (reply) => {
-            bot.forwardMessage(adminChatId, chatId, reply.message_id);
-            askQuestion(index + 1);
+      bot.sendMessage(chatId, questions[index], { reply_markup: { force_reply: false } })
+        .then(() => {
+          bot.once('message', (reply) => {
+            const username = reply.from.username ? `@${reply.from.username}` : '';
+            const forwardedMessage = `Bot: Sarkawt Badeni Bot\n\nئەندام: ${username}\n\nپرسیار: ${questions[index]}\n\nوەڵام: ${reply.text}`;
+            bot.sendMessage(adminChatId, forwardedMessage)
+              .then(() => {
+                index++;
+                askQuestion();
+              });
           });
         });
     } else {
-      const translatedText = 'زور سوپاس به ريز بو جاب دانه وى هه مى پرسياره كا . جابدانا ته ناردى بو كاك سەرکەوت . تو لى ڤى ريكى كليك كردنى لى ناڤى په يوه نديى راسته و خو لى گه ل به ريزان (@sarkawtdxn) ب كه ڤينه كار';
-      bot.sendMessage(chatId, translatedText);
-      }
-      
+      const translatedText = 'زور سوپاس به ريز بو جاب دانه وى هه مى پرسياره كا . جابدانا ته ناردى بو كاك سەرکەوت . تو لى ڤى ريكى كليك كردنى لى ناڤى په يوه نديى راسته و خو لى گه ل به ريزان (@sarkawtdxn) ب كه ڤينه كار' 
+         bot.sendMessage(chatId, translatedText);
+    }
   };
 
-  askQuestion(0);
+  askQuestion();
 };
 
   const buttons = [
@@ -131,21 +136,23 @@ case 'project_notification':
           ];
           askQuestions(chatId, questions);
         } else {
-          const buttonText = 'کلیکی لێبدە';
+       
+          const buttonText = 'کلیک ڤێرە کە';
           const buttonCallback = 'send_images';
-
-          bot.sendMessage(chatId, 'تكايه ببوره به ريز تو ناڤى ته ل ڤهى كارهينى نيه ل به ر ڤا هوكارا جابا ته ناگه ت ب كاك سەرکەوت بو دروست كرنى ناڤى ب كارهينه را كليك ڤى لينكى بكه' + buttonText, {
+          
+          bot.sendMessage(chatId, 'تكايه ببوره به ريز تو ناڤى ته ل ڤهى كارهينى نيه ل به ر ڤا هوكارا جابا ته ناگه ت ب كاك سەرکەوت بو دروست كرنى ناڤى ب كارهينه را كليك ڤێرە بكه. و پاش دروست کردنا ناڤی ب کار هینەری کلیکی ل دوگمەی (من ڤیت دەست بی کەم ب کار کردنی) ڤە کە', {
             reply_markup: {
               inline_keyboard: [
                 [{ text: buttonText, callback_data: buttonCallback }],
               ],
             },
           });
-        }
+        } 
         break;
 
       case 'send_images':
         const imagePaths = [
+          'not0.jpg',
           'not1.jpg',
           'not2.jpg',
           'not3.jpg',
